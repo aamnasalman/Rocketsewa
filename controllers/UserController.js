@@ -37,7 +37,7 @@ exports.registerUser = async (req, res) => {
 // hospital user
 exports.registerHospitalUser = async (req, res) => {
   try {
-    const { username, email, password, contactInformation } = req.body;
+    const { username, email, password, contactInformation, userId } = req.body;
 
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
@@ -54,6 +54,7 @@ exports.registerHospitalUser = async (req, res) => {
       email,
       password: hashedPassword,
       role : 'hospital_sub',
+      addedByHospitalID: userId,
       contactInformation: contactInformation,
     });
 
