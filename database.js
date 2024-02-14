@@ -3,12 +3,12 @@ const dotenv = require('dotenv'); // For managing environment variables
 dotenv.config(); // Load environment variables from a .env file if available
 
 // Retrieve the MongoDB connection URL from environment variables
-const mongodbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/rocketsewa';
+const mongodbURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/rocketsewa';
 
 // Connect to MongoDB
 mongoose.connect(mongodbURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  // useNewUrlParser: true,
+  // useUnifiedTopology: true,
 });
 
 console.log("running database");
