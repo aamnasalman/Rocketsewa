@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-deployment
+  labels:
+    app: devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devops
+  template:
+    metadata:
+      labels:
+        app: devops 
+    spec:
+      containers:
+        - name: devopsp2
+          image: daniaahmed182/devops:latest
+          env:
+            - name: MONGO_URI
+              value: mongodb+srv://$(MONGO_USERNAME):$(MONGO_PASSWORD)@cluster0.y8ueoox.mongodb.net/rocketsewa?retryWrites=true&w=majority
+          envFrom:
+            - secretRef:
+                name: mongodb-secret
+          ports:
+            - containerPort: 3000
+              protocol: TCP
