@@ -9,7 +9,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def imageName = "daniaahmed182/devops:${env.BUILD_NUMBER}"
+                    def imageName = "daniaahmed182/devops:latest"
                     bat "docker build -t ${imageName} ."
                 }
             }
