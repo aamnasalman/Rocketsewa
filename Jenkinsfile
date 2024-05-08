@@ -3,7 +3,12 @@ pipeline {
     stages {
         stage('Checkout SCM') {
             steps {
-                git branch: 'main', credentialsId: 'github', url: 'https://github.com/aamnasalman/Rocketsewa.git'
+                git branch: 'main', credentialsId:'github', url:'https://github.com/aamnasalman/Rocketsewa.git'
+            }
+        }
+        stage('Check nohup') {
+            steps {
+                sh 'which nohup'
             }
         }
         stage('Build Docker Image') {
@@ -11,7 +16,6 @@ pipeline {
                 script {
                     def imageName = "daniaahmed182/devops:${env.BUILD_NUMBER}"
                     sh "docker build -t ${imageName} ."
-                    sh "docker run -d --name jenkins-docker-build -t ${imageName}"
                 }
             }
         }
