@@ -16,8 +16,8 @@ RUN npm install
 # Copy the rest of the application code to the working directory
 COPY . .
 
-# Copy .env file to the working directory
-COPY .env .
+# # Copy .env file to the working directory
+# COPY .env .
 
 
 # Expose the port on which your Node.js application will run
