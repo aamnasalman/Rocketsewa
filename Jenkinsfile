@@ -26,5 +26,20 @@ pipeline {
                 }
             }
         }
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    // Update the image in the deployment YAML file
+                    def imageName = "daniaahmed182/devops:${env.BUILD_NUMBER}"
+                    bat "sed -i 's|daniaahmed182/devops:latest|${imageName}|' ./backend-deployment.yaml"
+                    bat "sed -i 's|daniaahmed182/devops:latest|${imageName}|' ./backend-service.yaml"
+                    // Apply the deployment
+                    withCredentials([file(credentialsId: 'kubernetes', variable: 'KUBECONFIG')]) {
+                    bat 'kubectl apply -f ./backend-deployment.yaml'
+                    bat 'kubectl apply -f ./backend-service.yaml'
+}
+                }
+            }
+        }
 }
 }
