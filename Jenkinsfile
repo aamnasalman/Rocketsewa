@@ -31,14 +31,18 @@ pipeline {
         script {
             // Update the image in the deployment YAML file
             def imageName = "daniaahmed182/devops:${env.BUILD_NUMBER}"
-            $deploymentContent = [System.IO.File]::ReadAllText("./backend-deployment.yaml")
-            $serviceContent = [System.IO.File]::ReadAllText("./backend-service.yaml")
             
-            $deploymentContent = $deploymentContent -replace 'daniaahmed182/devops:latest', $imageName
-            $serviceContent = $serviceContent -replace 'daniaahmed182/devops:latest', $imageName
+            // Read the content of the files
+            def deploymentContent = new File("./backend-deployment.yaml").text
+            def serviceContent = new File("./backend-service.yaml").text
             
-            [System.IO.File]::WriteAllText("./backend-deployment.yaml", $deploymentContent)
-            [System.IO.File]::WriteAllText("./backend-service.yaml", $serviceContent)
+            // Perform replacements
+            deploymentContent = deploymentContent.replaceAll('daniaahmed182/devops:latest', imageName)
+            serviceContent = serviceContent.replaceAll('daniaahmed182/devops:latest', imageName)
+            
+            // Write back the modified content
+            new File("./backend-deployment.yaml").text = deploymentContent
+            new File("./backend-service.yaml").text = serviceContent
             
             // Apply the deployment
             withCredentials([file(credentialsId: 'kubernetes', variable: 'KUBECONFIG')]) {
