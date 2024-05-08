@@ -14,5 +14,16 @@ pipeline {
                 }
             }
         }
-    }
+         stage('Push to DockerHub') {
+            steps {
+                script {
+                    def imageName = "daniaahmed182/devops:${env.BUILD_NUMBER}"
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub_creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+                        bat "docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS docker.io"
+                    }
+                    bat "docker push ${imageName}"
+                    bat "docker logout"
+                }
+            }
+        }
 }
