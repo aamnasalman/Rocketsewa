@@ -33,16 +33,16 @@ pipeline {
             def imageName = "daniaahmed182/devops:${env.BUILD_NUMBER}"
             
             // Read the content of the files
-            def deploymentContent = new File("./backend-deployment.yaml").text
-            def serviceContent = new File("./backend-service.yaml").text
+            def deploymentContent = readFile("./backend-deployment.yaml")
+            def serviceContent = readFile("./backend-service.yaml")
             
             // Perform replacements
             deploymentContent = deploymentContent.replaceAll('daniaahmed182/devops:latest', imageName)
             serviceContent = serviceContent.replaceAll('daniaahmed182/devops:latest', imageName)
             
             // Write back the modified content
-            new File("./backend-deployment.yaml").text = deploymentContent
-            new File("./backend-service.yaml").text = serviceContent
+            writeFile file: "./backend-deployment.yaml", text: deploymentContent
+            writeFile file: "./backend-service.yaml", text: serviceContent
             
             // Apply the deployment
             withCredentials([file(credentialsId: 'kubernetes', variable: 'KUBECONFIG')]) {
