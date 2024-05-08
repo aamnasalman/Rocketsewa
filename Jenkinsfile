@@ -31,15 +31,19 @@ pipeline {
         script {
             // Update the image in the deployment YAML file
             def imageName = "daniaahmed182/devops:${env.BUILD_NUMBER}"
-            // Use PowerShell to replace the old image name with the new one in the deployment YAML file
-            (Get-Content ./backend-deployment.yaml) -replace 'daniaahmed182/devops:latest', $imageName | Set-Content ./backend-deployment.yaml
-            (Get-Content ./backend-service.yaml) -replace 'daniaahmed182/devops:latest', $imageName | Set-Content ./backend-service.yaml
-
-            // Apply the deployment using kubectl
+            $deploymentContent = [System.IO.File]::ReadAllText("./backend-deployment.yaml")
+            $serviceContent = [System.IO.File]::ReadAllText("./backend-service.yaml")
+            
+            $deploymentContent = $deploymentContent -replace 'daniaahmed182/devops:latest', $imageName
+            $serviceContent = $serviceContent -replace 'daniaahmed182/devops:latest', $imageName
+            
+            [System.IO.File]::WriteAllText("./backend-deployment.yaml", $deploymentContent)
+            [System.IO.File]::WriteAllText("./backend-service.yaml", $serviceContent)
+            
+            // Apply the deployment
             withCredentials([file(credentialsId: 'kubernetes', variable: 'KUBECONFIG')]) {
-                // Use the KUBECONFIG environment variable to authenticate with the Kubernetes cluster
-                bat 'kubectl --kubeconfig $KUBECONFIG apply -f ./backend-deployment.yaml'
-                bat 'kubectl --kubeconfig $KUBECONFIG apply -f ./backend-service.yaml'
+                bat 'kubectl apply -f ./backend-deployment.yaml'
+                bat 'kubectl apply -f ./backend-service.yaml'
             }
         }
     }
