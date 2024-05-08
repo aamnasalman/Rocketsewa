@@ -6,11 +6,6 @@ pipeline {
                 git branch: 'main', credentialsId:'github', url:'https://github.com/aamnasalman/Rocketsewa.git'
             }
         }
-        stage('Check nohup') {
-            steps {
-                sh 'which nohup'
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 script {
