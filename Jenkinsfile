@@ -27,19 +27,22 @@ pipeline {
             }
         }
         stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    // Update the image in the deployment YAML file
-                    def imageName = "daniaahmed182/devops:${env.BUILD_NUMBER}"
-                    bat "sed -i 's|daniaahmed182/devops:latest|${imageName}|' ./backend-deployment.yaml"
-                    bat "sed -i 's|daniaahmed182/devops:latest|${imageName}|' ./backend-service.yaml"
-                    // Apply the deployment
-                    withCredentials([file(credentialsId: 'kubernetes', variable: 'KUBECONFIG')]) {
-                    bat 'kubectl apply -f ./backend-deployment.yaml'
-                    bat 'kubectl apply -f ./backend-service.yaml'
-}
-                }
+    steps {
+        script {
+            // Update the image in the deployment YAML file
+            def imageName = "daniaahmed182/devops:${env.BUILD_NUMBER}"
+            // Use PowerShell to replace the old image name with the new one in the deployment YAML file
+            (Get-Content ./backend-deployment.yaml) -replace 'daniaahmed182/devops:latest', $imageName | Set-Content ./backend-deployment.yaml
+            (Get-Content ./backend-service.yaml) -replace 'daniaahmed182/devops:latest', $imageName | Set-Content ./backend-service.yaml
+
+            // Apply the deployment using kubectl
+            withCredentials([file(credentialsId: 'kubernetes', variable: 'KUBECONFIG')]) {
+                // Use the KUBECONFIG environment variable to authenticate with the Kubernetes cluster
+                bat 'kubectl --kubeconfig $KUBECONFIG apply -f ./backend-deployment.yaml'
+                bat 'kubectl --kubeconfig $KUBECONFIG apply -f ./backend-service.yaml'
             }
         }
+    }
+}
 }
 }
